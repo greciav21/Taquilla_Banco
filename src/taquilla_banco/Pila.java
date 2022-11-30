@@ -28,7 +28,7 @@ public class Pila {
         
      
     }
-    NodoA peek(){
+    NodoA peek(Cola cola){
         if (this.IsEmpty()) {
             System.out.println("La pila esta vacia");
             return null;

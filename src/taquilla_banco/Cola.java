@@ -5,6 +5,8 @@ public class Cola {
        Nodo front;
        Nodo rear;
        
+       
+       
     public Cola() { 
         this.front = null;
         this.rear = null;
@@ -74,43 +76,27 @@ public class Cola {
    return null;
   }
   
-  public void Desencolar_clt(){
+
+   public void Desencolar_clientes(){
+       int atendidos = 0, orden = 1;
+       
     if (this.estaVacia()) {
         System.out.println("No hay nadie en la cola");
     }else{
-        Nodo r = front;
-        while (front != null){
-            Desencolar(); 
-            while(r != null){
-                r.sig = r;
-                if(r.prioridad){
-                    for(int i=0; i <= 4; i++){
-                        Desencolar();
-                    }
-                    Desencolar_prioridad();  
-                }
-            }
-        }
-    }
-  }
-  
-   public void Desencolar_clt2(){
-    if (this.estaVacia()) {
-        System.out.println("No hay nadie en la cola");
-    }else{
-        Nodo r = front;
-        while(r != null){
-            if(r.prioridad){
-                for(int i=0; i <= 4; i++){
-                    Desencolar();
-                }
-                Desencolar_prioridad();  
+        while(!estaVacia()){
+            atendidos ++;
+            if(orden <= 1){
+               // Pila.peek(Cola.Desencolar_prioridad());
             }else{
-                r.sig = r;  
+                //Pila.peek(Cola.Desencolar());
+                    atendidos ++;
             }
-        }
+            if(orden > 5){
+                orden = 1;
+            }
     }
   }
+}
   
  public void MostrarCola(){
     if (this.estaVacia()) {
