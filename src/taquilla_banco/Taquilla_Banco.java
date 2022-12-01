@@ -102,15 +102,15 @@ public class Taquilla_Banco {
             }
             fecha = fecha.plusDays(1);
             Archivo.EscribirArchivo(fecha.toString(), "fecha.in");
-
             System.out.println("");
-            System.out.print("¿Cerrar el Proceso Bancario? S / N: ---> ");
+            
+            System.out.print("¿Cerrar el Proceso Bancario? s / n: ---> ");
             Finalizar = sc.nextLine();
-
-            if (Finalizar.equals("N")) {
+          
+            if (Finalizar.equals("n")) {
                 System.out.println("Siguiente Día, Procesando Clientes.");
                 System.out.println("");
             }
-        } while (!Finalizar.equalsIgnoreCase("S"));
+        } while (!Finalizar.equalsIgnoreCase("s"));
     }
 }
