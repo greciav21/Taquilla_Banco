@@ -1,4 +1,3 @@
-
 package taquilla_banco;
 
 import java.io.IOException;
@@ -6,108 +5,112 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Scanner;
 
-
 public class Taquilla_Banco {
 
-    static Scanner scr = new Scanner(System.in);
+    static Scanner sc = new Scanner(System.in);
 
     public static void main(String[] args) throws IOException {
-        
-        
-        
+
         String Finalizar;
         String Opción;
         do {
-            LocalDate fecha = LocalDate.of(2022, 11, 30);
-            LocalTime iniciotaquilla = LocalTime.of(8, 0);
-            LocalTime cierretaquilla = LocalTime.of(3, 30);
-            LocalTime AtencionCliente = iniciotaquilla;
+            LocalDate fecha = LocalDate.parse(Archivo.LeerArchivo("fecha.in"));
+            LocalTime InicioTaquilla = LocalTime.of(8, 0);
+            LocalTime CierreTaquilla = LocalTime.of(15, 30);
+            LocalTime AtenciónClientes = InicioTaquilla;
 
-            Cola ClientesPendientes = new Cola();
             Cola Clientes = new Cola();
+            Cola ClientesPendientes = new Cola();
+            Archivo A = new Archivo();
             Pila ClientesAtendidos = new Pila();
-            Archivo a = new Archivo();
 
-            //ClientesPendientes.EncolarClientes("ClientesPendientes.in");
-            a.EliminarArchivos("ClientesPendientes");
-           // Clientes.EncolarClientes("Clientes.in");
+            ClientesPendientes.EncolarClientes("ClientesPendientes.in");
+            A.EliminarArchivo("ClientesPendientes.in");
+            Clientes.EncolarClientes("Clientes.in");
 
-            System.out.println("\tTaquilla Banesco");
-            System.out.println();
+            System.out.println("\t * * * TAQUILLA BANESCO * * * ");
             System.out.println("");
-            System.out.println(" " + fecha + " " + iniciotaquilla + "Elegir Opción: \n");
-            System.out.println("A --> Atender Clientes.\n");
-            System.out.println("B --> Finalizar Proceso.\n");
+            System.out.print("Hoy es: " + fecha + ". Son las [" + InicioTaquilla + "], Opciones: \n\n"
+                    + "a : Para Iniciar Proceso:\n" + "b : Para Finalizar Proceso:\n\n");
 
-            Opción = scr.nextLine();
+            System.out.print("[Opción]---------> ");
+            Opción = sc.nextLine();
 
             switch (Opción) {
-                case "1":
-                    int clientesatendidos = 0;
-                    Cliente c = null;
-                    while (!Clientes.estaVacia() && AtencionCliente.isBefore(cierretaquilla)) {
+                case "a":
+                    int Catendidos = 0;
+                    Cliente C = null;
+                    while (!Clientes.estaVacia() && AtenciónClientes.isBefore(CierreTaquilla)) {
                         if (!ClientesPendientes.estaVacia()) {
                             System.out.println("");
-                            if (clientesatendidos > 3) {
-                                ClientesPendientes.Desencolar_prioridad();
-                                clientesatendidos = 0;
+                            if (Catendidos > 3) {
+                                ClientesPendientes.DesencolarPrioridad();
+                                Catendidos = 0;
                             }
-                            c = ClientesPendientes.Desencolar().clt;
-                            clientesatendidos++;
+                            C = ClientesPendientes.Desencolar().clt;
+                            Catendidos++;
+
+                        } else if (!Clientes.estaVacia() && ClientesPendientes.estaVacia()) {
+                            System.out.println("");
+                            if (Catendidos > 3) {
+                                Clientes.DesencolarPrioridad();
+                                Catendidos = 0;
+                            }
+                            C = Clientes.Desencolar().clt;
+                            Catendidos++;
                         }
-                        if (c != null) {
-                            System.out.println("A la Hora" + AtencionCliente + "Se Atendió a" + c.getNombre() + c.getApellido());
-                            for (String i : c.getSolicitud()) {
+                        if (C != null) {
+                            System.out.print("\t A las [" + AtenciónClientes + "] Hora" + " --> " + "Se atiende a: " + C.getNombre() + " " + C.getApellido());
+                            for (String i : C.getSolicitudArray()) {
+
                                 switch (i) {
-                                    case "Consulta Movimientos":
-                                        AtencionCliente = AtencionCliente.plusMinutes(1);
-                                        AtencionCliente = AtencionCliente.plusSeconds(30);
+                                    case "retiro":
+                                        AtenciónClientes = AtenciónClientes.plusMinutes(4);
                                         break;
-                                    case "Pago Servicios":
-                                        AtencionCliente = AtencionCliente.plusMinutes(2);
+                                    case "deposito":
+                                        AtenciónClientes = AtenciónClientes.plusMinutes(3);
                                         break;
-                                    case "Depósito":
-                                        AtencionCliente = AtencionCliente.plusMinutes(3);
+                                    case "consulta/movimientos":
+                                        AtenciónClientes = AtenciónClientes.plusMinutes(1);
+                                        AtenciónClientes = AtenciónClientes.plusSeconds(30);
                                         break;
-                                    case "Retito":
-                                        AtencionCliente = AtencionCliente.plusMinutes(4);
+                                    case "actualizacion/libreta":
+                                        AtenciónClientes = AtenciónClientes.plusMinutes(5);
                                         break;
-                                    case "Actualización Libreta":
-                                        AtencionCliente = AtencionCliente.plusMinutes(5);
+                                    case "pago/Servicios":
+                                        AtenciónClientes = AtenciónClientes.plusMinutes(2);
                                         break;
                                 }
                             }
-                            System.out.println("Realizó: " + c.getSolicitud());
-                            //ClientesAtendidos.push(new NodoA(c));
+                            System.out.println(" --> Realizó: " + C.getSolicitud());
+                            ClientesAtendidos.push(new NodoA(C));
                         }
                     }
                     break;
-                case "2":
+                case "b":
                     break;
                 default:
-                    System.out.println("Solicitud no Valida");
+                    System.out.println("opcion no valida");
                     break;
             }
             if (!Clientes.estaVacia()) {
-                //Clientes.MostrarCola("ClientesPendientes.in");
+                Clientes.ImprimirDesencolar("ClientesPendientes.in");
                 System.out.println("No Se Pudo Atender A Todos Los Clientes.");
             }
-            /*if (!ClientesAtendidos.estaVacia()) {
-                ClientesAtendidos.popImprimir("Taquilla " + fecha.toString() + ".log");
+            if (!ClientesAtendidos.estaVacia()) {
+                ClientesAtendidos.ImprimirDesapilar(" Taquilla " + fecha.toString() + " ");
             }
             fecha = fecha.plusDays(1);
-            Archivo.EscribirArchivos(fecha.toString(), "LocalDate.of(2022, 11, 30)");
+            Archivo.EscribirArchivo(fecha.toString(), "fecha.in");
 
             System.out.println("");
-            System.out.println("Cerrar Proceso Bancario S / N: ");
-            Finalizar = scr.nextLine();
+            System.out.print("¿Cerrar el Proceso Bancario? S / N: ---> ");
+            Finalizar = sc.nextLine();
 
             if (Finalizar.equals("N")) {
-                System.out.println("Pasar Al Siguiente Día");
+                System.out.println("Siguiente Día, Procesando Clientes.");
                 System.out.println("");
             }
         } while (!Finalizar.equalsIgnoreCase("S"));
-    }*/
-
-    
+    }
 }

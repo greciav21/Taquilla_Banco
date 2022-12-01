@@ -1,39 +1,52 @@
-
 package taquilla_banco;
 
+import java.io.IOException;
+
 public class Pila {
-     NodoA top;
-    
-    void push (NodoA Clt){
-        if (this.top==null){
-            this.top= Clt;
-        }else {
-            NodoA temp = this.top;
-            this.top= Clt;
-            this.top.Down = temp;
-        }
-         }
-    boolean IsEmpty (){
-        return this.top== null;  
+    NodoA top;
+
+    public boolean estaVacia() {
+        return top == null;
     }
-    NodoA pop (){
-        if (this.IsEmpty()){
+
+    void push(NodoA clt) {
+        if (this.top == null) {
+            this.top = clt;
+        } else {
+            NodoA topAux = this.top;
+            this.top = clt;
+            this.top.Down = topAux;
+        }
+    }
+
+    NodoA pop() {
+        if (this.estaVacia()) {
             System.out.println("La pila esta vacia");
             return null;
         } else {
-              NodoA aux = this.top;
-              this.top = this.top.Down;
-              return aux;
-      }
-        
-     
+            NodoA aux = this.top;
+            this.top = this.top.Down;
+            return aux;
+        }
     }
-    NodoA peek(Cola cola){
-        if (this.IsEmpty()) {
+
+    NodoA peek() {
+        if (this.estaVacia()) {
             System.out.println("La pila esta vacia");
             return null;
-        }else{
-            return new NodoA(top.Clientes);
-        } 
+        } else {
+            return new NodoA(top.Cliente);
+        }
+    }
+
+    void ImprimirDesapilar(String direccion) throws IOException {
+        if (!estaVacia()) {
+            String s = pop().Cliente.getDat();
+
+            while (!estaVacia()) {
+                s += "\n" + pop().Cliente.getDat();
+            }
+            Archivo.EscribirArchivo(s, direccion);
+        }
     }
 }

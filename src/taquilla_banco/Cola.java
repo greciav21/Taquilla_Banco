@@ -1,114 +1,75 @@
-
 package taquilla_banco;
 
+import java.io.IOException;
+
 public class Cola {
-       Nodo front;
-       Nodo rear;
-       
-       
-       
-    public Cola() { 
-        this.front = null;
-        this.rear = null;
+
+    Nodo front;
+    Nodo rear;
+
+    boolean estaVacia() {
+        return front == null;
     }
-    
-  public boolean estaVacia(){
-      return this.front == null;
-  }
-  
-  public void Encolar(Cliente clt){
-    Nodo newnodo = new Nodo(clt);
-    if (this.estaVacia()){
-        rear = front = newnodo;
-    }else{
-        rear.sig = newnodo; 
-        rear = rear.sig;
-    }
-  
-  } 
-  
-  public Nodo Desencolar(){
-      if (this.estaVacia()) {
-          System.out.println("No hay nadie en la cola");
-          return null;
-      }else{
-          Nodo temp = front;
-          front = front.sig;
-          temp.sig = null;
-          return temp;
-    
-      }
-  }
-  
-  public void Encolar_prioridad(Cliente cl, boolean prior){
-        if (front == null) {
-            front = rear = new Nodo(cl,prior);
-        }else{
-            rear.sig = new Nodo(cl,prior);
+
+    public void Encolar(Nodo clt) {
+        if (this.estaVacia()) {
+            front = rear = clt;
+        } else {
+            rear.sig = clt;
             rear = rear.sig;
         }
-  }
-  
-  
-  public Nodo Desencolar_prioridad(){
-    if (this.estaVacia()) {
-        System.out.println("La cola está vacía");
-        return null;
-    }else{  
-        Nodo prev = null;
-        Nodo aux = front;
-        while(aux != null){ 
-            if (aux.prioridad){
-                if(aux == front){
-                    front = front.sig;
-                    return aux;
-                }
-                prev.sig = aux.sig;
-                aux.sig = null;
-                return aux;
-            }
-            prev = aux;
-            aux = aux.sig;
-        }
     }
-   
-   System.out.println("No hay clientes prioritarios en la cola");
-   return null;
-  }
-  
 
-   public void Desencolar_clientes(){
-       int atendidos = 0, orden = 1;
-       
-    if (this.estaVacia()) {
-        System.out.println("No hay nadie en la cola");
-    }else{
-        while(!estaVacia()){
-            atendidos ++;
-            if(orden <= 1){
-               // Pila.peek(Cola.Desencolar_prioridad());
-            }else{
-                //Pila.peek(Cola.Desencolar());
-                    atendidos ++;
-            }
-            if(orden > 5){
-                orden = 1;
-            }
-    }
-  }
-}
-  
- public void MostrarCola(){
-    if (this.estaVacia()) {
-        System.out.println("No hay nadie en la cola");
-    }else{  
-        Nodo r = front;
-        System.out.println("La cola se compone de: ");
-        while (r != null){
-            System.out.print(" - " + r.clt );
-            r = r.sig;
+    public Nodo Desencolar() {
+        if (this.estaVacia()) {
+            System.out.println("No hay nadie en la cola");
+
+            return null;
+        } else {
+            Nodo aux = front;
+            front = this.front.sig;
+            aux.sig = null;
+            return aux;
         }
     }
-    System.out.println();
- } 
+
+    public void EncolarClientes(String fuente) throws IOException {
+        if (Archivo.LeerArchivo(fuente) != null) {
+            String[] Clientes = Archivo.LeerArchivo(fuente).split("\n");
+
+            String[] Datos;
+            String[] Solicitudes;
+            for (String i : Clientes) {
+                Datos = i.split(" ");
+                Solicitudes = Datos[3].split(",");
+                Encolar(new Nodo(new Cliente(Datos[0], Datos[1], Datos[2].equalsIgnoreCase("si"), Solicitudes)));
+            }
+        }
+    }
+
+    public void ImprimirDesencolar(String direccion) throws IOException {
+        String s = Desencolar().clt.getInfo();
+        while (!estaVacia()) {
+            s += "\n" + Desencolar().clt.getInfo();
+        }
+        Archivo.EscribirArchivo(s, direccion);
+    }
+
+    void DesencolarPrioridad() {
+        if (this.front != null) {
+            Nodo aux = this.front;
+            while (aux.sig != null) {
+                if (aux.sig.clt.getPrioridad()) {
+                    Nodo aux2 = aux.sig;
+                    aux.sig = aux.sig.sig;
+                    aux2.sig = this.front;
+                    this.front = aux2;
+                    break;
+                }
+                if (aux.sig != null) {
+                    aux = aux.sig;
+                }
+            }
+        }
+    }
 }

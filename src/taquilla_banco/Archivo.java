@@ -1,4 +1,3 @@
-
 package taquilla_banco;
 
 import java.io.BufferedReader;
@@ -14,37 +13,35 @@ public class Archivo {
         File f = new File(direccion);
         if (f.exists()) {
             BufferedReader br = new BufferedReader(new FileReader(direccion));
-
             String s;
             s = br.readLine();
             String datos = s;
-
             while ((s = br.readLine()) != null) {
+                datos += "\n" + s;//imprimir linea mas salto de linea
             }
             return datos;
         }
         return null;
     }
 
-    void EliminarArchivos(String direccion) {
+    void EliminarArchivo(String direccion) {
         File f = new File(direccion);
         if (f.exists()) {
             f.delete();
         }
     }
 
-    static void EscribirArchivos(String ruta, String datos) throws IOException {
+    static void EscribirArchivo(String dato, String direccion) throws IOException {
         FileWriter archivo = null;
         PrintWriter escribir = null;
-
         try {
-            archivo = new FileWriter(ruta);
+            archivo = new FileWriter(direccion);
             escribir = new PrintWriter(archivo);
-
-            escribir.println(datos);
-
-        } catch (IOException excep) {
-            System.out.println("Error en los Archivos" + excep.getMessage());
+            escribir.println(dato);
+        } catch (IOException e) {
+            System.out.println("Error: " + e.getMessage());
+        } finally {
+            archivo.close();
         }
     }
 }
